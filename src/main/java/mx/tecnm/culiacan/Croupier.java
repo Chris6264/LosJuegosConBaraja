@@ -22,6 +22,10 @@ public class Croupier extends Jugador{
         jugadorApostador.setBarajaJugador(barajaJugador);
     }
 
+    public void barajearCartas(){ mazoJugador.getBaraja().barajar(); }
+
+    public void partirCartas(){ mazoJugador.getBaraja().partir(); }
+
     public Deque<String> getPilaCartas() {
         return pilaCartas;
     }
