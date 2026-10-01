@@ -1,6 +1,7 @@
 package mx.tecnm.culiacan;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GeneradorDeFichas {
@@ -10,22 +11,12 @@ public class GeneradorDeFichas {
         this.fichas = new ArrayList<>();
     }
 
-    public List<Ficha> obtenerFichasJugadorApostador(){
-        for (int i = 1; i <= 10; i++){
-            if(i == 1) fichas.add(Ficha.MORADA);
-
-            if(i >= 1 && i <= 2) {
-                fichas.add(Ficha.NEGRA);
-                fichas.add(Ficha.VERDE);
-            }
-
-            if(i >= 1 && i <= 5) fichas.add(Ficha.ROJA);
-            if(i >= 1) fichas.add(Ficha.BLANCA);
-        }
-        return fichas;
-    }
-
-    public List<Ficha> obtenerFichasCroupier() {
+    public List<Ficha> obtenerFichasJugadorApostador() {
+        fichas.add(Ficha.MORADA);
+        fichas.addAll(Collections.nCopies(2, Ficha.NEGRA));
+        fichas.addAll(Collections.nCopies(2, Ficha.VERDE));
+        fichas.addAll(Collections.nCopies(5, Ficha.ROJA));
+        fichas.addAll(Collections.nCopies(10, Ficha.BLANCA));
         return fichas;
     }
 }

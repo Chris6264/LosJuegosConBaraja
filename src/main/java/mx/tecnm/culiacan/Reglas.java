@@ -1,4 +1,4 @@
 package mx.tecnm.culiacan;
 
-public class BlackJack {
+public interface Reglas {
 }
