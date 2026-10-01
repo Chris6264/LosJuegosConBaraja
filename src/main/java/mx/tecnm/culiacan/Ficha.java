@@ -1,11 +1,11 @@
 package mx.tecnm.culiacan;
 
 public enum Ficha {
-    BLANCA (1),
-    ROJA (5),
-    VERDE (25),
-    NEGRA (100),
-    MORADA (500);
+    BLANCA (1),// 10
+    ROJA (5), // 5
+    VERDE (25), //2
+    NEGRA (100), // 2
+    MORADA (500); //1
 
     private final int valorFicha;
 
