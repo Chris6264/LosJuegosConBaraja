@@ -1,19 +1,32 @@
 package mx.tecnm.culiacan;
 
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class Croupier extends Jugador{
 
-    public Croupier(List<Ficha> fichas, MazoJugador mazoJugador) {
-        super(fichas, mazoJugador);
+    private Deque<String> pilaCartas;
+    private List<Ficha> fichas;
+
+    public Croupier(GeneradorDeFichas generadorDeFichas, MazoJugador mazoJugador) {
+        super(generadorDeFichas, mazoJugador);
+        this.pilaCartas = mazoJugador.obtenerBarajaCroupier();
+        this.fichas = new ArrayList<>();
     }
 
-    private void generarFichas(){
-        //Blancas: 20
-        //ROJA: 15
-        //VERDE: 10
-        //NEGRA: 8
-        //MORADA: 5
+    public void repartirCartaAJugador(JugadorApostador jugadorApostador){
+        List<String> barajaJugador = new ArrayList<>();
+        barajaJugador.add(pilaCartas.pop());
+        barajaJugador.add(pilaCartas.pop());
+        jugadorApostador.setBarajaJugador(barajaJugador);
     }
 
+    public Deque<String> getPilaCartas() {
+        return pilaCartas;
+    }
+
+    public List<Ficha> getFichas() {
+        return fichas;
+    }
 }

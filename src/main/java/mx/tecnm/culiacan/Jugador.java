@@ -1,13 +1,17 @@
 package mx.tecnm.culiacan;
 
-import java.util.List;
-
 public abstract class Jugador {
-    List<Ficha> fichas;
-    MazoJugador mazoJugador;
+   protected GeneradorDeFichas generadorDeFichas;
+   protected MazoJugador mazoJugador;
 
-    public Jugador(List<Ficha> fichas, MazoJugador mazoJugador) {
-        this.fichas = fichas;
+    public Jugador(GeneradorDeFichas generadorDeFichas, MazoJugador mazoJugador) {
+        this.generadorDeFichas = generadorDeFichas;
         this.mazoJugador = mazoJugador;
+    }
+
+    public GeneradorDeFichas getGeneradorDeFichas() { return generadorDeFichas; }
+
+    public MazoJugador getMazoJugador() {
+        return mazoJugador;
     }
 }

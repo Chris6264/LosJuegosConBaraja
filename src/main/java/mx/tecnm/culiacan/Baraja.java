@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Baraja {
 
-    private final Deque<String> pilaCartas;
+    private Deque<String> pilaCartas;
     private static final String[] VALOR_CARTAS = {"A","2","3","4","5","6","7","8","9","10","J","Q","K"};
 
     public Baraja() {
