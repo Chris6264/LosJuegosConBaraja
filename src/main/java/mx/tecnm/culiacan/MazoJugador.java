@@ -9,6 +9,8 @@ public class MazoJugador {
         this.baraja = baraja;
     }
 
+    public Baraja getBaraja() { return baraja; }
+
     public Deque<String> obtenerBarajaCroupier(){
         return baraja.getPilaCartas();
     }
