@@ -1,9 +1,8 @@
 package mx.tecnm.culiacan;
 
 import java.util.Map;
-import java.util.TreeMap;
 
-public class BlackJackV1 implements VersionJuego{
+public class BlackJackV1 implements VersionJuego {
     @Override
     public void jugar(Reglas reglas, VistaJuego vistaJuego) {
         Baraja baraja = new Baraja();
@@ -11,59 +10,78 @@ public class BlackJackV1 implements VersionJuego{
         MazoJugador mazoJugador = new MazoJugador(baraja);
         GeneradorDeFichas generadorDeFichas = new GeneradorDeFichas();
 
-        Croupier croupier = new Croupier(generadorDeFichas,mazoJugador);
+        Croupier croupier = new Croupier(generadorDeFichas, mazoJugador);
 
         croupier.barajearCartas();
         croupier.partirCartas();
 
-        JugadorApostador jugadorApostador = new JugadorApostador(generadorDeFichas,mazoJugador);
+        JugadorApostador jugadorApostador = new JugadorApostador(generadorDeFichas, mazoJugador);
 
         vistaJuego.mostrarEncabezado();
 
-        Map<Ficha,Integer> fichas = new TreeMap<>();
-        for (Ficha ficha: jugadorApostador.getFichas()){
-            fichas.put(ficha, fichas.getOrDefault(ficha, 0) + 1);
-        }
+        Map<Ficha, Integer> fichasJugador = jugadorApostador.getFichasJugador();
 
-        vistaJuego.mostrarFichas(fichas);
-
+        vistaJuego.mostrarFichas(fichasJugador);
         vistaJuego.mostrarTipoDeApuestas();
 
-        System.out.print("Como deseas apostar: ");
-        int opcionApuesta = Keyboard.readInt();
-/*
-        System.out.print("Que ficha desea apostar: ");
-        String colorDeFicha = Keyboard.readString();
+        int tipoApuesta = vistaJuego.pedirTipoDeApuesta();
 
-        System.out.print("Cuantas fichas deseas apostar: ");
-        int cantidadDeApuesta = Keyboard.readInt();
+        procesarApuesta(tipoApuesta, fichasJugador, croupier, vistaJuego);
 
-        comprobarApuesta(colorDeFicha,cantidadDeApuesta,fichas);
-*/
+        vistaJuego.mostrarFichas(fichasJugador);
+
+        Map<Ficha, Integer> apuestaActual = croupier.getApuesta();
+        vistaJuego.mostrarApuestaActual(apuestaActual);
+
         croupier.repartirCartaAJugador(jugadorApostador);
-
-        jugadorApostador.pedirCarta(croupier);
-
-        vistaJuego.mostrarBarajaJugador(jugadorApostador.getBarajaJugador());
     }
 
-    private boolean comprobarApuesta(String colorDeFicha, int cantidadDeApuesta, Map<Ficha,Integer> fichas) {
-        Ficha ficha = obtenerColorFicha(colorDeFicha);
-        if(fichas.containsKey(ficha) && fichas.get(ficha) >= cantidadDeApuesta)
-        {
-            fichas.put(ficha,fichas.get(ficha) - cantidadDeApuesta);
+    private void procesarApuesta(int tipoApuesta, Map<Ficha, Integer> fichas, Croupier croupier, VistaJuego vistaJuego) {
+        if (tipoApuesta == 1) realizarApuestaMinima(fichas, croupier);
+        else if (tipoApuesta == 2) realizarApuestaMaxima(fichas, croupier);
+        else if (tipoApuesta == 3) realizarApuestaPersonalizada(fichas, croupier, vistaJuego);
+        else throw new ReglasException("Opcion no valida");
+    }
+
+    private void realizarApuestaMinima(Map<Ficha, Integer> fichas, Croupier croupier) {
+        int disponible = fichas.getOrDefault(Ficha.BLANCA, 0);
+        if (disponible < 5) throw new ReglasException("Fichas insuficientes");
+
+        fichas.put(Ficha.BLANCA, disponible - 5);
+        croupier.añadirApuesta(Ficha.BLANCA, 5);
+    }
+
+    private void realizarApuestaMaxima(Map<Ficha, Integer> fichas, Croupier croupier) {
+        for (Map.Entry<Ficha, Integer> entry : fichas.entrySet()) {
+            if (entry.getValue() > 0) croupier.añadirApuesta(entry.getKey(), entry.getValue());
         }
-        return true;
+        fichas.replaceAll((ficha, cantidad) -> 0);
     }
 
-    private Ficha obtenerColorFicha(String colorDeFicha) {
-        Ficha ficha = null;
-        if(colorDeFicha.toUpperCase().equals("BLANCA")) ficha = Ficha.BLANCA;
-        else if(colorDeFicha.toUpperCase().equals("ROJA")) ficha = Ficha.ROJA;
-        else if(colorDeFicha.toUpperCase().equals("VERDE")) ficha = Ficha.VERDE;
-        else if(colorDeFicha.toUpperCase().equals("NEGRA")) ficha = Ficha.NEGRA;
-        else if(colorDeFicha.toUpperCase().equals("MORADA")) ficha = Ficha.MORADA;
-        else throw new ReglasException("Ficha Invalida");
-        return ficha;
+    private void realizarApuestaPersonalizada(Map<Ficha, Integer> fichas, Croupier croupier, VistaJuego vistaJuego) {
+        vistaJuego.mostrarFichas(fichas);
+
+        int tipoFicha = vistaJuego.pedirTipoDeFicha();
+        Ficha ficha = obtenerFicha(tipoFicha);
+
+        int cantidadDeApuesta = vistaJuego.pedirCantidadDeFichasApostar();
+        validarCantidadDeApuesta(ficha, cantidadDeApuesta, fichas);
+
+        fichas.put(ficha, fichas.get(ficha) - cantidadDeApuesta);
+        croupier.añadirApuesta(ficha, cantidadDeApuesta);
+    }
+
+    private Ficha obtenerFicha(int tipoFicha) {
+        Ficha[] opciones = Ficha.values();
+        int indice = tipoFicha - 1;
+        if (indice < 0 || indice >= opciones.length) throw new ReglasException("Ficha Invalida");
+        return opciones[indice];
+    }
+
+    private void validarCantidadDeApuesta(Ficha ficha, int cantidad, Map<Ficha, Integer> fichas) {
+        int disponible = fichas.getOrDefault(ficha, 0);
+        if (cantidad <= 0 || cantidad > disponible) {
+            throw new ReglasException("Cantidad invalida o insuficiente");
+        }
     }
 }

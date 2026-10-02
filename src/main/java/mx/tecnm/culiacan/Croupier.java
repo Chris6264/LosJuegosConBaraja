@@ -2,17 +2,19 @@ package mx.tecnm.culiacan;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 public class Croupier extends Jugador{
 
     private Deque<String> pilaCartas;
-    private List<Ficha> fichas;
+    private Map<Ficha,Integer> apuesta;
 
     public Croupier(GeneradorDeFichas generadorDeFichas, MazoJugador mazoJugador) {
         super(generadorDeFichas, mazoJugador);
         this.pilaCartas = mazoJugador.obtenerBarajaCroupier();
-        this.fichas = new ArrayList<>();
+        this.apuesta = new HashMap<>();
     }
 
     public void repartirCartaAJugador(JugadorApostador jugadorApostador){
@@ -30,7 +32,11 @@ public class Croupier extends Jugador{
         return pilaCartas;
     }
 
-    public List<Ficha> getFichas() {
-        return fichas;
+    public Map<Ficha,Integer> getApuesta() {
+        return apuesta;
+    }
+
+    public void añadirApuesta(Ficha ficha, int cantidadFichas){
+        apuesta.put(ficha,cantidadFichas);
     }
 }
