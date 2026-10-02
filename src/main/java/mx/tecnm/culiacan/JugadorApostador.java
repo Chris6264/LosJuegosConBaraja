@@ -3,16 +3,17 @@ package mx.tecnm.culiacan;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 public class JugadorApostador extends Jugador{
 
     private List<String> barajaJugador;
-    private List<Ficha> fichas;
+    private Map<Ficha,Integer> fichasJugador;
 
     public JugadorApostador(GeneradorDeFichas generadorDeFichas, MazoJugador mazoJugador) {
         super(generadorDeFichas, mazoJugador);
         this.barajaJugador = new ArrayList<>();
-        this.fichas = generadorDeFichas.obtenerFichasJugadorApostador();
+        this.fichasJugador = generadorDeFichas.getFichas();
     }
 
     public void pedirCarta(Croupier croupier){
@@ -28,5 +29,5 @@ public class JugadorApostador extends Jugador{
         this.barajaJugador = barajaJugador;
     }
 
-    public List<Ficha> getFichas(){ return fichas; }
+    public Map<Ficha,Integer> getFichasJugador(){ return fichasJugador; }
 }

@@ -1,22 +1,25 @@
 package mx.tecnm.culiacan;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.TreeMap;
+import java.util.Map;
 
 public class GeneradorDeFichas {
-    private List<Ficha> fichas;
+    private Map<Ficha,Integer> fichas;
 
     public GeneradorDeFichas() {
-        this.fichas = new ArrayList<>();
+        this.fichas = new TreeMap<>();
+        generarFichasJugadorApostador();
     }
 
-    public List<Ficha> obtenerFichasJugadorApostador() {
-        fichas.add(Ficha.MORADA);
-        fichas.addAll(Collections.nCopies(2, Ficha.NEGRA));
-        fichas.addAll(Collections.nCopies(2, Ficha.VERDE));
-        fichas.addAll(Collections.nCopies(5, Ficha.ROJA));
-        fichas.addAll(Collections.nCopies(10, Ficha.BLANCA));
+    public void generarFichasJugadorApostador() {
+        fichas.put(Ficha.MORADA, 1);
+        fichas.put(Ficha.NEGRA, 2);
+        fichas.put(Ficha.VERDE, 2);
+        fichas.put(Ficha.ROJA, 5);
+        fichas.put(Ficha.BLANCA, 10);
+      }
+
+    public Map<Ficha, Integer> getFichas() {
         return fichas;
     }
 }
