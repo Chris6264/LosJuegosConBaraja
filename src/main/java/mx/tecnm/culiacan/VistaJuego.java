@@ -64,6 +64,23 @@ public class VistaJuego {
         return Keyboard.readInt();
     }
 
+    public int pedirAccion() {
+        abrirTabla("Accion", ANCHO);
+        System.out.println(filaOpcion(1, "Pedir carta", ""));
+        System.out.println(filaOpcion(2, "Pasar", ""));
+        cerrarTabla(ANCHO);
+        System.out.print(CYAN + "➜ " + RESET + "Que accion desea realizar: ");
+        return Keyboard.readInt();
+    }
+
+    public void mostrarPuntaje(int puntajeCartas) {
+        System.out.println(NEGRITA + "Puntaje de cartas: " + AMARILLO + puntajeCartas + RESET + "\n");
+    }
+
+    public void mostrarMensajeAJugador() {
+        System.out.println(ROJO + NEGRITA + "Has perdido, sacaste mas de 21" + RESET);
+    }
+
     public void mostrarApuestaActual(Map<Ficha, Integer> apuestaActual) {
         abrirTabla("Apuesta actual", ANCHO);
         encabezadoColumnas();
@@ -78,31 +95,72 @@ public class VistaJuego {
     }
 
     public void mostrarBarajaJugador(List<String> barajaJugador) {
-        int ancho = Math.max(ANCHO, 1 + barajaJugador.size() * ANCHO_CARTA);
+        dibujarMano("Tu mano", barajaJugador, false);
+    }
+
+    public void mostrarBarajaCroupier(List<String> barajaCroupier, boolean seguirJugando) {
+        dibujarMano("Mano del croupier", barajaCroupier, seguirJugando);
+    }
+
+    public void mostrarDictamen(int puntajeJugador, int puntajeCroupier) {
+        if (puntajeJugador > 21) System.out.println(ROJO + NEGRITA + "Has perdido, te pasaste de 21" + RESET);
+        else if (puntajeCroupier > 21) System.out.println(VERDE + NEGRITA + "Felicidades, has ganado. El croupier se paso de 21" + RESET);
+        else if (puntajeJugador > puntajeCroupier) System.out.println(VERDE + NEGRITA + "Felicidades, has ganado. Obtuviste un puntaje mas cercano a 21" + RESET);
+        else if (puntajeJugador < puntajeCroupier) System.out.println(ROJO + NEGRITA + "Has perdido, el croupier obtuvo un puntaje mas cercano a 21" + RESET);
+        else System.out.println(GRIS + NEGRITA + "Es un empate" + RESET);
+    }
+
+    public void mostrarMensajeBlackJack(){
+         System.out.println(VERDE + NEGRITA + "Felicidades, has ganado. obtuviste blackjack" + RESET);
+    }
+
+    private void dibujarMano(String titulo, List<String> cartas, boolean ocultarSegunda) {
+        int ancho = Math.max(ANCHO, 1 + cartas.size() * ANCHO_CARTA);
 
         String[] lineas = new String[7];
         for (int i = 0; i < lineas.length; i++) lineas[i] = "";
 
-        for (String carta : barajaJugador) {
-            String palo = carta.substring(0, 1);
-            String valor = carta.substring(1);
-            String color = (palo.equals("♥") || palo.equals("♦")) ? ROJO : NEGRO;
-
-            lineas[0] += pintar(color, "╭───────╮");
-            lineas[1] += pintar(color, String.format("│ %-2s    │", valor));
-            lineas[2] += pintar(color, "│       │");
-            lineas[3] += pintar(color, String.format("│   %s   │", palo));
-            lineas[4] += pintar(color, "│       │");
-            lineas[5] += pintar(color, String.format("│    %2s │", valor));
-            lineas[6] += pintar(color, "╰───────╯");
+        for (int c = 0; c < cartas.size(); c++) {
+            String[] carta = (ocultarSegunda && c == 1)
+                    ? lineasCartaOculta()
+                    : lineasCarta(cartas.get(c));
+            for (int i = 0; i < lineas.length; i++) lineas[i] += carta[i];
         }
 
-        abrirTabla("Tu mano", ancho);
-        int relleno = ancho - 1 - barajaJugador.size() * ANCHO_CARTA;
+        abrirTabla(titulo, ancho);
+        int relleno = ancho - 1 - cartas.size() * ANCHO_CARTA;
         for (String linea : lineas) {
             System.out.println("│ " + linea + " ".repeat(relleno) + "│");
         }
         cerrarTabla(ancho);
+    }
+
+    private String[] lineasCarta(String carta) {
+        String palo = carta.substring(0, 1);
+        String valor = carta.substring(1);
+        String color = (palo.equals("♥") || palo.equals("♦")) ? ROJO : NEGRO;
+
+        return new String[]{
+                pintar(color, "╭───────╮"),
+                pintar(color, String.format("│ %-2s    │", valor)),
+                pintar(color, "│       │"),
+                pintar(color, String.format("│   %s   │", palo)),
+                pintar(color, "│       │"),
+                pintar(color, String.format("│    %2s │", valor)),
+                pintar(color, "╰───────╯")
+        };
+    }
+
+    private String[] lineasCartaOculta() {
+        return new String[]{
+                pintar(AZUL, "╭───────╮"),
+                pintar(AZUL, "│░░░░░░░│"),
+                pintar(AZUL, "│░░░░░░░│"),
+                pintar(AZUL, "│░░░░░░░│"),
+                pintar(AZUL, "│░░░░░░░│"),
+                pintar(AZUL, "│░░░░░░░│"),
+                pintar(AZUL, "╰───────╯")
+        };
     }
 
     private void abrirTabla(String titulo, int ancho) {

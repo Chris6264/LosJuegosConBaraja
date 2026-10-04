@@ -1,5 +1,6 @@
 package mx.tecnm.culiacan;
 
+import java.util.List;
 import java.util.Map;
 
 public class BlackJackV1 implements VersionJuego {
@@ -34,6 +35,59 @@ public class BlackJackV1 implements VersionJuego {
         vistaJuego.mostrarApuestaActual(apuestaActual);
 
         croupier.repartirCartaAJugador(jugadorApostador);
+
+        croupier.tomarCarta();
+        croupier.tomarCarta();
+
+        iniciarJuego(jugadorApostador,croupier,vistaJuego);
+    }
+
+    private void iniciarJuego(JugadorApostador jugadorApostador, Croupier croupier, VistaJuego vistaJuego) {
+        boolean seguirJugando = true;
+        List<String> barajaJugador = jugadorApostador.getBarajaJugador();
+
+        do {
+            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), seguirJugando);
+            vistaJuego.mostrarBarajaJugador(barajaJugador);
+
+            int puntajeJugador = obtenerPuntaje(barajaJugador);
+            vistaJuego.mostrarPuntaje(puntajeJugador);
+
+            if (puntajeJugador >= 21) {
+                seguirJugando = false;
+                terminarPartida(puntajeJugador, croupier, barajaJugador, vistaJuego, seguirJugando);
+                break;
+            }
+
+            int opcionAccion = vistaJuego.pedirAccion();
+
+            if (opcionAccion == 1) jugadorApostador.pedirCarta(croupier);
+            else if (opcionAccion == 2) {
+                seguirJugando = false;
+                terminarPartida(puntajeJugador, croupier, barajaJugador, vistaJuego, seguirJugando);
+            }
+            else throw new ReglasException("Accion invalida");
+
+        } while (seguirJugando);
+    }
+
+    private void terminarPartida(int puntajeJugador, Croupier croupier, List<String> barajaJugador, VistaJuego vistaJuego, boolean seguirJugando) {
+        int puntajeCroupier = obtenerPuntaje(croupier.getBarajaCroupier());
+
+        if (puntajeJugador <= 21) {
+            while (puntajeCroupier < 17) {
+                croupier.tomarCarta();
+                puntajeCroupier = obtenerPuntaje(croupier.getBarajaCroupier());
+            }
+        }
+
+        vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), seguirJugando);
+        vistaJuego.mostrarPuntaje(puntajeCroupier);
+
+        vistaJuego.mostrarBarajaJugador(barajaJugador);
+        vistaJuego.mostrarPuntaje(puntajeJugador);
+
+        vistaJuego.mostrarDictamen(puntajeJugador, puntajeCroupier);
     }
 
     private void procesarApuesta(int tipoApuesta, Map<Ficha, Integer> fichas, Croupier croupier, VistaJuego vistaJuego) {
@@ -83,5 +137,32 @@ public class BlackJackV1 implements VersionJuego {
         if (cantidad <= 0 || cantidad > disponible) {
             throw new ReglasException("Cantidad invalida o insuficiente");
         }
+    }
+
+    private int obtenerPuntaje(List<String> baraja) {
+        int puntaje = 0;
+        int cantidadAses = 0;
+
+        for (String carta : baraja) {
+            String valorCarta = carta.substring(1).trim();
+
+            try {
+                puntaje += Integer.parseInt(valorCarta);
+            } catch (NumberFormatException e) {
+                if (valorCarta.equalsIgnoreCase("A")) {
+                    cantidadAses++;
+                    puntaje += 11;
+                } else {
+                    puntaje += 10;
+                }
+            }
+        }
+
+        while (puntaje > 21 && cantidadAses > 0) {
+            puntaje -= 10;
+            cantidadAses--;
+        }
+
+        return puntaje;
     }
 }
