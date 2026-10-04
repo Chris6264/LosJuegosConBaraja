@@ -9,11 +9,13 @@ import java.util.List;
 public class Croupier extends Jugador{
 
     private Deque<String> pilaCartas;
+    private List<String> barajaCroupier;
     private Map<Ficha,Integer> apuesta;
 
     public Croupier(GeneradorDeFichas generadorDeFichas, MazoJugador mazoJugador) {
         super(generadorDeFichas, mazoJugador);
         this.pilaCartas = mazoJugador.obtenerBarajaCroupier();
+        this.barajaCroupier = new ArrayList<>();
         this.apuesta = new HashMap<>();
     }
 
@@ -22,6 +24,14 @@ public class Croupier extends Jugador{
         barajaJugador.add(pilaCartas.pop());
         barajaJugador.add(pilaCartas.pop());
         jugadorApostador.setBarajaJugador(barajaJugador);
+    }
+
+    public List<String> getBarajaCroupier() {
+        return barajaCroupier;
+    }
+
+    public void tomarCarta(){
+        if(!pilaCartas.isEmpty()) barajaCroupier.add(pilaCartas.pop());
     }
 
     public void barajearCartas(){ mazoJugador.getBaraja().barajar(); }
