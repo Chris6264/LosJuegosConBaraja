@@ -19,7 +19,7 @@ public class VistaJuego {
     private static final String NEGRO = "\u001B[30m";
     private static final String FONDO_BLANCO = "\u001B[107m";
 
-    private static final int ANCHO = 27;
+    private static final int ANCHO = 36;
     private static final int ANCHO_CARTA = 10;
 
     public void mostrarEncabezado() {
@@ -43,7 +43,7 @@ public class VistaJuego {
 
     public void mostrarTipoDeApuestas() {
         abrirTabla("Tipo de apuesta", ANCHO);
-        System.out.println(filaOpcion(1, "Minima", "5 fichas"));
+        System.out.println(filaOpcion(1, "Minima", "5 fichas blancas"));
         System.out.println(filaOpcion(2, "Maxima", "todas"));
         System.out.println(filaOpcion(3, "Personalizada", ""));
         cerrarTabla(ANCHO);
@@ -98,20 +98,50 @@ public class VistaJuego {
         dibujarMano("Tu mano", barajaJugador, false);
     }
 
-    public void mostrarBarajaCroupier(List<String> barajaCroupier, boolean seguirJugando) {
-        dibujarMano("Mano del croupier", barajaCroupier, seguirJugando);
+    public void mostrarBarajaCroupier(List<String> barajaCroupier, boolean juegoEnCurso) {
+        dibujarMano("Mano del croupier", barajaCroupier, juegoEnCurso);
     }
 
-    public void mostrarDictamen(int puntajeJugador, int puntajeCroupier) {
-        if (puntajeJugador > 21) System.out.println(ROJO + NEGRITA + "Has perdido, te pasaste de 21" + RESET);
-        else if (puntajeCroupier > 21) System.out.println(VERDE + NEGRITA + "Felicidades, has ganado. El croupier se paso de 21" + RESET);
-        else if (puntajeJugador > puntajeCroupier) System.out.println(VERDE + NEGRITA + "Felicidades, has ganado. Obtuviste un puntaje mas cercano a 21" + RESET);
-        else if (puntajeJugador < puntajeCroupier) System.out.println(ROJO + NEGRITA + "Has perdido, el croupier obtuvo un puntaje mas cercano a 21" + RESET);
-        else System.out.println(GRIS + NEGRITA + "Es un empate" + RESET);
+    public void mostrarDictamen(DictamenJugador dictamen, int puntajeJugador, int puntajeCroupier) {
+        if (dictamen == DictamenJugador.VICTORIA) {
+            String motivo;
+            if (puntajeJugador == 21) motivo = "Has obtenido 21 puntos";
+            else if (puntajeCroupier > 21) motivo = "El croupier se paso de 21 puntos";
+            else motivo = "Obtuviste un puntaje mas cercano a 21 puntos";
+            System.out.println(VERDE + NEGRITA + "Felicidades, Has ganado. " + motivo + RESET);
+        } else if (dictamen == DictamenJugador.DERROTA) {
+            String motivo;
+            if (puntajeCroupier == 21) motivo = "El croupier obtuvo 21 puntos";
+            else if (puntajeJugador > 21) motivo = "Te pasaste de 21 puntos";
+            else motivo = "El croupier obtuvo un puntaje mas cercano a 21 puntos";
+            System.out.println(ROJO + NEGRITA + "Has perdido, " + motivo + RESET);
+        } else {
+            String mensaje = (puntajeJugador == 21)
+                    ? "Es un empate, ambos obtuvieron 21 puntos"
+                    : "Es un empate";
+            System.out.println(GRIS + NEGRITA + mensaje + RESET);
+        }
     }
 
-    public void mostrarMensajeBlackJack(){
-         System.out.println(VERDE + NEGRITA + "Felicidades, has ganado. obtuviste blackjack" + RESET);
+    public int opcionDeJuego() {
+        abrirTabla("Que deseas hacer", ANCHO);
+        System.out.println(filaOpcion(1, "Jugar De Nuevo", ""));
+        System.out.println(filaOpcion(2, "Terminar", ""));
+        cerrarTabla(ANCHO);
+        System.out.print(CYAN + "➜ " + RESET + "Que opcion deseas: ");
+        return Keyboard.readInt();
+    }
+
+    public void mostrarSinFichas(){
+        System.out.println(ROJO + NEGRITA + "Te quedaste sin fichas" + RESET);
+    }
+
+    public void mostrarMensajeBlackJack() {
+        System.out.println(VERDE + NEGRITA + "Felicidades, Has ganado. Obtuviste blackjack" + RESET);
+    }
+
+    public void mostrarMensajeCroupierBlackJack(){
+        System.out.println(ROJO + NEGRITA + "Has perdido, El croupier obtuvo blackjack" + RESET);
     }
 
     private void dibujarMano(String titulo, List<String> cartas, boolean ocultarSegunda) {
@@ -174,25 +204,28 @@ public class VistaJuego {
         System.out.println("└" + "─".repeat(ancho) + "┘\n");
     }
 
+    // Ancho total: 1 + 3 + 1 + 21 + 1 + 8 + 1 = 36
     private void encabezadoColumnas() {
         String borde = "─".repeat(ANCHO);
-        System.out.println("│" + NEGRITA + String.format(" %-3s %-12s %8s ", "#", "Ficha", "Cant.") + RESET + "│");
+        System.out.println("│" + NEGRITA + String.format(" %-3s %-21s %8s ", "#", "Ficha", "Cant.") + RESET + "│");
         System.out.println("├" + borde + "┤");
     }
 
+    // Ancho total: 5 + 21 + 10 = 36
     private String filaFicha(int numero, Ficha ficha, int cantidad) {
         return "│"
                 + String.format(" %-3d ", numero)
-                + colorFicha(ficha) + String.format("%-12s", ficha) + RESET
+                + colorFicha(ficha) + String.format("%-21s", ficha) + RESET
                 + String.format(" %8d ", cantidad)
                 + "│";
     }
 
+    // Ancho total: 1 + 3 + 1 + 14 + 16 + 1 = 36
     private String filaOpcion(int numero, String nombre, String detalle) {
         return "│ "
                 + AMARILLO + "[" + numero + "]" + RESET + " "
-                + String.format("%-13s", nombre)
-                + TENUE + String.format("%8s", detalle) + RESET
+                + String.format("%-14s", nombre)
+                + TENUE + String.format("%16s", detalle) + RESET
                 + " │";
     }
 

@@ -4,6 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 public class BlackJackV1 implements VersionJuego {
+
+    private static final int APUESTA_MINIMA = 5;
+    private static final int PAGO_APUESTA_MINIMA = 10;
+    private static final int PUNTAJE_BLACKJACK = 21;
+    private static final int PUNTAJE_MINIMO_CROUPIER = 17;
+
     @Override
     public void jugar(Reglas reglas, VistaJuego vistaJuego) {
         Baraja baraja = new Baraja();
@@ -22,40 +28,52 @@ public class BlackJackV1 implements VersionJuego {
 
         Map<Ficha, Integer> fichasJugador = jugadorApostador.getFichasJugador();
 
-        vistaJuego.mostrarFichas(fichasJugador);
-        vistaJuego.mostrarTipoDeApuestas();
+        boolean seguirJugando;
 
-        int tipoApuesta = vistaJuego.pedirTipoDeApuesta();
+        do {
+            croupier.partirCartas();
+            croupier.barajearCartas();
 
-        procesarApuesta(tipoApuesta, fichasJugador, croupier, vistaJuego);
+            vistaJuego.mostrarFichas(fichasJugador);
+            vistaJuego.mostrarTipoDeApuestas();
 
-        vistaJuego.mostrarFichas(fichasJugador);
+            int tipoApuesta = vistaJuego.pedirTipoDeApuesta();
+            procesarApuesta(tipoApuesta, fichasJugador, croupier, vistaJuego);
 
-        Map<Ficha, Integer> apuestaActual = croupier.getApuesta();
-        vistaJuego.mostrarApuestaActual(apuestaActual);
+            vistaJuego.mostrarFichas(fichasJugador);
+            vistaJuego.mostrarApuestaActual(croupier.getApuesta());
 
-        croupier.repartirCartaAJugador(jugadorApostador);
+            croupier.repartirCartaAJugador(jugadorApostador);
+            croupier.tomarCarta();
+            croupier.tomarCarta();
 
-        croupier.tomarCarta();
-        croupier.tomarCarta();
+            iniciarJuego(jugadorApostador, croupier, vistaJuego);
 
-        iniciarJuego(jugadorApostador,croupier,vistaJuego);
+            if (tieneFichas(fichasJugador)) seguirJugando = vistaJuego.opcionDeJuego() == 1;
+            else {
+                vistaJuego.mostrarSinFichas();
+                seguirJugando = false;
+            }
+        } while (seguirJugando);
     }
 
     private void iniciarJuego(JugadorApostador jugadorApostador, Croupier croupier, VistaJuego vistaJuego) {
-        boolean seguirJugando = true;
+        boolean juegoEnCurso = true;
         List<String> barajaJugador = jugadorApostador.getBarajaJugador();
 
         do {
-            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), seguirJugando);
+            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), juegoEnCurso);
             vistaJuego.mostrarBarajaJugador(barajaJugador);
 
             int puntajeJugador = obtenerPuntaje(barajaJugador);
+            int puntajeCroupier = obtenerPuntaje(croupier.getBarajaCroupier());
+
+            if (comprobarBlackJack(barajaJugador, puntajeJugador, puntajeCroupier, vistaJuego, jugadorApostador, croupier)) break;
+
             vistaJuego.mostrarPuntaje(puntajeJugador);
 
-            if (puntajeJugador >= 21) {
-                seguirJugando = false;
-                terminarPartida(puntajeJugador, croupier, barajaJugador, vistaJuego, seguirJugando);
+            if (puntajeJugador >= PUNTAJE_BLACKJACK || puntajeCroupier >= PUNTAJE_BLACKJACK) {
+                terminarPartida(puntajeJugador, jugadorApostador, croupier, barajaJugador, vistaJuego);
                 break;
             }
 
@@ -63,31 +81,73 @@ public class BlackJackV1 implements VersionJuego {
 
             if (opcionAccion == 1) jugadorApostador.pedirCarta(croupier);
             else if (opcionAccion == 2) {
-                seguirJugando = false;
-                terminarPartida(puntajeJugador, croupier, barajaJugador, vistaJuego, seguirJugando);
+                juegoEnCurso = false;
+                terminarPartida(puntajeJugador, jugadorApostador, croupier, barajaJugador, vistaJuego);
             }
             else throw new ReglasException("Accion invalida");
 
-        } while (seguirJugando);
+        } while (juegoEnCurso);
     }
 
-    private void terminarPartida(int puntajeJugador, Croupier croupier, List<String> barajaJugador, VistaJuego vistaJuego, boolean seguirJugando) {
+    private void terminarPartida(int puntajeJugador, JugadorApostador jugadorApostador, Croupier croupier,
+                                 List<String> barajaJugador, VistaJuego vistaJuego) {
         int puntajeCroupier = obtenerPuntaje(croupier.getBarajaCroupier());
 
-        if (puntajeJugador <= 21) {
-            while (puntajeCroupier < 17) {
+        if (puntajeJugador < PUNTAJE_BLACKJACK) {
+            while (puntajeCroupier < PUNTAJE_MINIMO_CROUPIER) {
                 croupier.tomarCarta();
                 puntajeCroupier = obtenerPuntaje(croupier.getBarajaCroupier());
             }
         }
 
-        vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), seguirJugando);
+        vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), false);
         vistaJuego.mostrarPuntaje(puntajeCroupier);
 
         vistaJuego.mostrarBarajaJugador(barajaJugador);
         vistaJuego.mostrarPuntaje(puntajeJugador);
 
-        vistaJuego.mostrarDictamen(puntajeJugador, puntajeCroupier);
+        DictamenJugador dictamen = calcularDictamen(puntajeJugador, puntajeCroupier);
+        vistaJuego.mostrarDictamen(dictamen, puntajeJugador, puntajeCroupier);
+
+        distribucionApuestas(dictamen, jugadorApostador, croupier);
+
+        croupier.recogerCartas(barajaJugador);
+    }
+
+    private boolean comprobarBlackJack(List<String> barajaJugador, int puntajeJugador, int puntajeCroupier,
+                                       VistaJuego vistaJuego, JugadorApostador jugadorApostador, Croupier croupier) {
+        boolean blackJackJugador = esBlackJack(barajaJugador, puntajeJugador);
+        boolean blackJackCroupier = esBlackJack(croupier.getBarajaCroupier(), puntajeCroupier);
+
+        if (!blackJackJugador && !blackJackCroupier) return false;
+
+        DictamenJugador dictamen;
+
+        if (blackJackJugador && blackJackCroupier) {
+            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), false);
+            vistaJuego.mostrarPuntaje(puntajeCroupier);
+            vistaJuego.mostrarMensajeCroupierBlackJack();
+            vistaJuego.mostrarPuntaje(puntajeJugador);
+            vistaJuego.mostrarMensajeBlackJack();
+            dictamen = DictamenJugador.EMPATE;
+        } else if (blackJackJugador) {
+            vistaJuego.mostrarPuntaje(puntajeJugador);
+            vistaJuego.mostrarMensajeBlackJack();
+            dictamen = DictamenJugador.VICTORIA;
+        } else {
+            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), false);
+            vistaJuego.mostrarPuntaje(puntajeCroupier);
+            vistaJuego.mostrarMensajeCroupierBlackJack();
+            dictamen = DictamenJugador.DERROTA;
+        }
+
+        distribucionApuestas(dictamen, jugadorApostador, croupier);
+        croupier.recogerCartas(barajaJugador);
+        return true;
+    }
+
+    private boolean esBlackJack(List<String> baraja, int puntaje) {
+        return baraja.size() == 2 && puntaje == PUNTAJE_BLACKJACK;
     }
 
     private void procesarApuesta(int tipoApuesta, Map<Ficha, Integer> fichas, Croupier croupier, VistaJuego vistaJuego) {
@@ -97,17 +157,28 @@ public class BlackJackV1 implements VersionJuego {
         else throw new ReglasException("Opcion no valida");
     }
 
+    private void distribucionApuestas(DictamenJugador dictamenJugador, JugadorApostador jugadorApostador, Croupier croupier) {
+        Map<Ficha, Integer> apuestaActual = croupier.getApuesta();
+        Map<Ficha, Integer> fichasJugador = jugadorApostador.getFichasJugador();
+
+        if (dictamenJugador == DictamenJugador.VICTORIA || dictamenJugador == DictamenJugador.EMPATE) {
+            apuestaActual.forEach((ficha, cantidad) -> fichasJugador.merge(ficha, cantidad, Integer::sum));
+        }
+
+        apuestaActual.clear();
+    }
+
     private void realizarApuestaMinima(Map<Ficha, Integer> fichas, Croupier croupier) {
         int disponible = fichas.getOrDefault(Ficha.BLANCA, 0);
-        if (disponible < 5) throw new ReglasException("Fichas insuficientes");
+        if (disponible < APUESTA_MINIMA) throw new ReglasException("Fichas insuficientes");
 
-        fichas.put(Ficha.BLANCA, disponible - 5);
-        croupier.añadirApuesta(Ficha.BLANCA, 5);
+        fichas.put(Ficha.BLANCA, disponible - APUESTA_MINIMA);
+        croupier.añadirApuesta(Ficha.BLANCA, PAGO_APUESTA_MINIMA);
     }
 
     private void realizarApuestaMaxima(Map<Ficha, Integer> fichas, Croupier croupier) {
         for (Map.Entry<Ficha, Integer> entry : fichas.entrySet()) {
-            if (entry.getValue() > 0) croupier.añadirApuesta(entry.getKey(), entry.getValue());
+            if (entry.getValue() > 0) croupier.añadirApuesta(entry.getKey(), entry.getValue() * 2);
         }
         fichas.replaceAll((ficha, cantidad) -> 0);
     }
@@ -158,11 +229,23 @@ public class BlackJackV1 implements VersionJuego {
             }
         }
 
-        while (puntaje > 21 && cantidadAses > 0) {
+        while (puntaje > PUNTAJE_BLACKJACK && cantidadAses > 0) {
             puntaje -= 10;
             cantidadAses--;
         }
 
         return puntaje;
+    }
+
+    private boolean tieneFichas(Map<Ficha, Integer> fichas) {
+        return fichas.values().stream().anyMatch(cantidad -> cantidad > 0);
+    }
+
+    private DictamenJugador calcularDictamen(int puntajeJugador, int puntajeCroupier) {
+        if (puntajeJugador > PUNTAJE_BLACKJACK) return DictamenJugador.DERROTA;
+        if (puntajeCroupier > PUNTAJE_BLACKJACK) return DictamenJugador.VICTORIA;
+        if (puntajeJugador > puntajeCroupier) return DictamenJugador.VICTORIA;
+        if (puntajeJugador < puntajeCroupier) return DictamenJugador.DERROTA;
+        return DictamenJugador.EMPATE;
     }
 }
