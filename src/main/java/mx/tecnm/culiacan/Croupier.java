@@ -26,6 +26,12 @@ public class Croupier extends Jugador{
         jugadorApostador.setBarajaJugador(barajaJugador);
     }
 
+    public void recogerCartas(List<String> barajaJugador){
+        pilaCartas.addAll(barajaJugador);
+        pilaCartas.addAll(barajaCroupier);
+        barajaCroupier.clear();
+    }
+
     public List<String> getBarajaCroupier() {
         return barajaCroupier;
     }
