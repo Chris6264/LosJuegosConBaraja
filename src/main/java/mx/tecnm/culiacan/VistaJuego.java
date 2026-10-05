@@ -204,14 +204,12 @@ public class VistaJuego {
         System.out.println("└" + "─".repeat(ancho) + "┘\n");
     }
 
-    // Ancho total: 1 + 3 + 1 + 21 + 1 + 8 + 1 = 36
     private void encabezadoColumnas() {
         String borde = "─".repeat(ANCHO);
         System.out.println("│" + NEGRITA + String.format(" %-3s %-21s %8s ", "#", "Ficha", "Cant.") + RESET + "│");
         System.out.println("├" + borde + "┤");
     }
 
-    // Ancho total: 5 + 21 + 10 = 36
     private String filaFicha(int numero, Ficha ficha, int cantidad) {
         return "│"
                 + String.format(" %-3d ", numero)
@@ -220,7 +218,6 @@ public class VistaJuego {
                 + "│";
     }
 
-    // Ancho total: 1 + 3 + 1 + 14 + 16 + 1 = 36
     private String filaOpcion(int numero, String nombre, String detalle) {
         return "│ "
                 + AMARILLO + "[" + numero + "]" + RESET + " "
@@ -249,5 +246,9 @@ public class VistaJuego {
             case "MORADA": return MORADO;
             default:       return AMARILLO;
         }
+    }
+
+    public void mostrarError(String mensaje) {
+        System.out.println(ROJO + NEGRITA + mensaje + RESET + "\n");
     }
 }
