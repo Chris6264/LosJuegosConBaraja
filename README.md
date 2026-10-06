@@ -270,13 +270,6 @@ classDiagram
 |                   | `GeneradorDeFichas`  | Crea el juego inicial de fichas de cada jugador.                                |
 |                   | `DictamenJugador`    | Resultado de una mano: `VICTORIA`, `EMPATE` o `DERROTA`.                        |
 
-### Decisiones de diseño
-
-- **Las versiones solo dirigen el flujo.** Puntajes, BlackJack, resultado, validaciones y pagos están en `Reglas`, y todo lo que se muestra o se pregunta está en `VistaJuego`.
-- **Las versiones no lanzan excepciones.** Las reglas lanzan `ReglasException` cuando algo es inválido y la versión la atrapa para mostrar el error y repetir la pregunta.
-- **La vista no decide nada.** Recibe el resultado ya calculado y solo elige el mensaje y el color.
-- **Fichas por jugador.** Cada `JugadorApostador` recibe su propio `GeneradorDeFichas`, así que ninguno comparte fichas con otro.
-- **Apuesta por jugador en la V2.** `Croupier` guarda una sola apuesta, por lo que la V2 conserva la de cada jugador aparte y se la devuelve al croupier justo antes de repartir ese pago.
 
 ### Flujo de una ronda (V2)
 
@@ -293,24 +286,3 @@ flowchart TD
     I -- Si --> A
     I -- No --> J(["Fin del juego"])
 ```
-
-## Cómo extender el proyecto
-
-- **Crear una nueva versión del juego:** implementa `VersionJuego`, usa los objetos `Reglas` y `VistaJuego` que recibe `jugar` y cámbiala en `App`. No necesitas modificar el modelo.
-- **Cambiar las reglas** (por ejemplo, pagar el BlackJack 3 a 2 o que el croupier se plante en 17 blando): crea otra clase que implemente `Reglas` y pásala a `jugar`.
-- **Cambiar la presentación:** todo lo visual está en `VistaJuego`. Los colores y el ancho de las tablas son constantes al inicio de la clase.
-- **Agregar una validación:** añade el método a `Reglas`, impleméntalo en `ReglasBlackJack` lanzando `ReglasException`, y llámalo dentro del `try` de la versión.
-
-## Limitaciones e ideas a futuro
-
-- No incluye pruebas automatizadas.
-- Las cartas se representan como texto (`"♠K"`); una clase `Carta` con palo y valor evitaría depender del formato del texto.
-- Faltan jugadas como dividir, doblar, seguro y rendirse.
-- Las apuestas podrían moverse a una clase propia (por ejemplo, `GestorApuestas`) para aligerar `ReglasBlackJack`.
-- La V1 y la V2 comparten varios métodos parecidos; se podría extraer una clase base abstracta con lo común.
-
-## Créditos
-
-- La clase `Keyboard` es de **Lewis y Loftus** (libro *Java Software Solutions*), incluida tal cual para leer la entrada.
-- **Autor:** _tu nombre_
-- **Licencia:** _por definir (por ejemplo, MIT)_
