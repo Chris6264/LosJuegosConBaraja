@@ -4,7 +4,7 @@ Blackjack por turnos para la terminal, escrito en **Java puro** y sin dependenci
 
 ![Java 11+](https://img.shields.io/badge/Java-11%2B-orange)
 ![Consola](https://img.shields.io/badge/interfaz-consola-informational)
-![Jugadores](https://img.shields.io/badge/jugadores-1%20a%206-green)
+![Jugadores](https://img.shields.io/badge/jugadores-2%20a%206-green)
 
 ## Contenido
 
