@@ -26,11 +26,23 @@ public class VistaJuego {
     private static final int ANCHO_CARTA = 10;
 
     public void mostrarEncabezado() {
+        mostrarTitulo();
+        System.out.println(CYAN + "  Jugador #1" + RESET + "\n");
+    }
+
+    public void mostrarTitulo() {
         String borde = "═".repeat(ANCHO);
         System.out.println(VERDE + NEGRITA + "╔" + borde + "╗");
         System.out.println("║" + centrar("♠ ♥  BLACKJACK  ♦ ♣", ANCHO) + "║");
         System.out.println("╚" + borde + "╝" + RESET);
-        System.out.println(CYAN + "  Jugador #1" + RESET + "\n");
+    }
+
+    public void mostrarMesa(int cantidadJugadores) {
+        System.out.println(CYAN + "  Mesa de " + cantidadJugadores + " jugadores" + RESET + "\n");
+    }
+
+    public void mostrarJugador(int numeroJugador) {
+        System.out.println(CYAN + NEGRITA + "▶ Jugador #" + numeroJugador + RESET + "\n");
     }
 
     public void mostrarFichas(Map<Ficha, Integer> fichasJugador) {
@@ -50,6 +62,11 @@ public class VistaJuego {
         System.out.println(filaOpcion(2, "Maxima", "todas"));
         System.out.println(filaOpcion(3, "Personalizada", ""));
         cerrarTabla(ANCHO);
+    }
+
+    public int pedirCantidadDeJugadores(int minimo, int maximo) {
+        System.out.print(CYAN + "➜ " + RESET + "Cuantos jugadores van a jugar (" + minimo + " a " + maximo + "): ");
+        return Keyboard.readInt();
     }
 
     public int pedirTipoDeApuesta() {
@@ -137,6 +154,14 @@ public class VistaJuego {
 
     public void mostrarSinFichas(){
         System.out.println(ROJO + NEGRITA + "Te quedaste sin fichas" + RESET);
+    }
+
+    public void mostrarJugadorSinFichas(int numeroJugador) {
+        System.out.println(ROJO + NEGRITA + "El jugador #" + numeroJugador + " se quedo sin fichas y sale de la mesa" + RESET + "\n");
+    }
+
+    public void mostrarSinJugadores() {
+        System.out.println(ROJO + NEGRITA + "Todos los jugadores se quedaron sin fichas" + RESET);
     }
 
     public void mostrarMensajeBlackJack() {
