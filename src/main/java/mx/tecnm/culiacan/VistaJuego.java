@@ -16,8 +16,11 @@ public class VistaJuego {
     private static final String MORADO = "\u001B[35m";
     private static final String GRIS = "\u001B[90m";
     private static final String BLANCO = "\u001B[97m";
-    private static final String NEGRO = "\u001B[30m";
-    private static final String FONDO_BLANCO = "\u001B[107m";
+
+    private static final String FONDO_CARTA = "\u001B[48;5;231m";
+    private static final String TINTA_NEGRA = "\u001B[38;5;16m";
+    private static final String TINTA_ROJA = "\u001B[38;5;160m";
+    private static final String TINTA_AZUL = "\u001B[38;5;25m";
 
     private static final int ANCHO = 36;
     private static final int ANCHO_CARTA = 10;
@@ -144,6 +147,10 @@ public class VistaJuego {
         System.out.println(ROJO + NEGRITA + "Has perdido, El croupier obtuvo blackjack" + RESET);
     }
 
+    public void mostrarError(String mensaje) {
+        System.out.println(ROJO + NEGRITA + mensaje + RESET + "\n");
+    }
+
     private void dibujarMano(String titulo, List<String> cartas, boolean ocultarSegunda) {
         int ancho = Math.max(ANCHO, 1 + cartas.size() * ANCHO_CARTA);
 
@@ -168,7 +175,7 @@ public class VistaJuego {
     private String[] lineasCarta(String carta) {
         String palo = carta.substring(0, 1);
         String valor = carta.substring(1);
-        String color = (palo.equals("♥") || palo.equals("♦")) ? ROJO : NEGRO;
+        String color = (palo.equals("♥") || palo.equals("♦")) ? TINTA_ROJA : TINTA_NEGRA;
 
         return new String[]{
                 pintar(color, "╭───────╮"),
@@ -183,13 +190,13 @@ public class VistaJuego {
 
     private String[] lineasCartaOculta() {
         return new String[]{
-                pintar(AZUL, "╭───────╮"),
-                pintar(AZUL, "│░░░░░░░│"),
-                pintar(AZUL, "│░░░░░░░│"),
-                pintar(AZUL, "│░░░░░░░│"),
-                pintar(AZUL, "│░░░░░░░│"),
-                pintar(AZUL, "│░░░░░░░│"),
-                pintar(AZUL, "╰───────╯")
+                pintar(TINTA_AZUL, "╭───────╮"),
+                pintar(TINTA_AZUL, "│░░░░░░░│"),
+                pintar(TINTA_AZUL, "│░░░░░░░│"),
+                pintar(TINTA_AZUL, "│░░░░░░░│"),
+                pintar(TINTA_AZUL, "│░░░░░░░│"),
+                pintar(TINTA_AZUL, "│░░░░░░░│"),
+                pintar(TINTA_AZUL, "╰───────╯")
         };
     }
 
@@ -227,7 +234,7 @@ public class VistaJuego {
     }
 
     private String pintar(String color, String texto) {
-        return FONDO_BLANCO + color + texto + RESET + " ";
+        return FONDO_CARTA + color + texto + RESET + " ";
     }
 
     private String centrar(String texto, int ancho) {
@@ -246,9 +253,5 @@ public class VistaJuego {
             case "MORADA": return MORADO;
             default:       return AMARILLO;
         }
-    }
-
-    public void mostrarError(String mensaje) {
-        System.out.println(ROJO + NEGRITA + mensaje + RESET + "\n");
     }
 }
