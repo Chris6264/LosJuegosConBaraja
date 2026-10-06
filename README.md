@@ -1,4 +1,4 @@
-# ♠ BlackJack en consola ♥
+<h1 align="center">♠ BlackJack en consola ♥</h1>
 
 Blackjack por turnos para la terminal, escrito en **Java puro** y sin dependencias. Juega solo contra el croupier (**V1**) o con **2 a 6 jugadores** en la misma mesa (**V2**), apostando fichas y viendo las cartas dibujadas en pantalla. El código separa el flujo del juego, las reglas y la vista, para poder cambiar o ampliar cada parte sin tocar las demás.
 
