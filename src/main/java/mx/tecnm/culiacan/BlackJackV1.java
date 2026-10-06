@@ -76,7 +76,7 @@ public class BlackJackV1 implements VersionJuego {
             boolean hayBlackJack = reglas.esBlackJack(barajaJugador, puntajeJugador)
                     || reglas.esBlackJack(croupier.getBarajaCroupier(), puntajeCroupier);
 
-            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), juegoEnCurso && !hayBlackJack);
+            vistaJuego.mostrarBarajaCroupier(croupier.getBarajaCroupier(), !hayBlackJack);
             vistaJuego.mostrarBarajaJugador(barajaJugador);
 
             if (comprobarBlackJack(barajaJugador, puntajeJugador, puntajeCroupier, vistaJuego, jugadorApostador, croupier)) break;
