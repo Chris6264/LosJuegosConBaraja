@@ -2,9 +2,11 @@
 
 Blackjack por turnos para la terminal, escrito en **Java puro** y sin dependencias. Juega solo contra el croupier (**V1**) o con **2 a 6 jugadores** en la misma mesa (**V2**), apostando fichas y viendo las cartas dibujadas en pantalla. El código separa el flujo del juego, las reglas y la vista, para poder cambiar o ampliar cada parte sin tocar las demás.
 
-![Java 11+](https://img.shields.io/badge/Java-11%2B-orange)
-![Consola](https://img.shields.io/badge/interfaz-consola-informational)
-![Jugadores](https://img.shields.io/badge/jugadores-2%20a%206-green)
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-11%2B-orange" alt="Java 11+">
+  <img src="https://img.shields.io/badge/interfaz-consola-informational" alt="Consola">
+  <img src="https://img.shields.io/badge/jugadores-2%20a%206-green" alt="Jugadores">
+</p>
 
 ## Contenido
 
