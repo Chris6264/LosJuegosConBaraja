@@ -7,6 +7,8 @@ public interface Reglas {
 
     int PUNTAJE_BLACKJACK = 21;
     int PUNTAJE_MINIMO_CROUPIER = 17;
+    int MINIMO_JUGADORES = 2;
+    int MAXIMO_JUGADORES = 6;
 
     int obtenerPuntaje(List<String> baraja);
 
@@ -17,6 +19,8 @@ public interface Reglas {
     boolean tieneFichas(Map<Ficha, Integer> fichas);
 
     void validarAccion(int opcionAccion);
+
+    void validarCantidadDeJugadores(int cantidadJugadores);
 
     void procesarApuesta(int tipoApuesta, Map<Ficha, Integer> fichas, Croupier croupier, VistaJuego vistaJuego);
 

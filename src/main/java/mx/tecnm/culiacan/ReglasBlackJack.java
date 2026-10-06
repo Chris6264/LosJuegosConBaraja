@@ -61,6 +61,13 @@ public class ReglasBlackJack implements Reglas {
     }
 
     @Override
+    public void validarCantidadDeJugadores(int cantidadJugadores) {
+        if (cantidadJugadores < MINIMO_JUGADORES || cantidadJugadores > MAXIMO_JUGADORES) {
+            throw new ReglasException("Cantidad de jugadores invalida, debe ser de " + MINIMO_JUGADORES + " a " + MAXIMO_JUGADORES);
+        }
+    }
+
+    @Override
     public void procesarApuesta(int tipoApuesta, Map<Ficha, Integer> fichas, Croupier croupier, VistaJuego vistaJuego) {
         if (tipoApuesta == 1) realizarApuestaMinima(fichas, croupier);
         else if (tipoApuesta == 2) realizarApuestaMaxima(fichas, croupier);
