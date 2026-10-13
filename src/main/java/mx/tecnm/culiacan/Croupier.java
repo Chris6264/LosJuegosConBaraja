@@ -82,8 +82,10 @@ public class Croupier extends Jugador {
     public void repartirCartaAJugador(JugadorApostador jugadorApostador) {
         List<String> barajaJugador = new ArrayList<>();
 
-        barajaJugador.add(pilaCartas.pop());
-        barajaJugador.add(pilaCartas.pop());
+        if(!pilaCartas.isEmpty()){
+            barajaJugador.add(pilaCartas.pop());
+            barajaJugador.add(pilaCartas.pop());
+        }
 
         jugadorApostador.setBarajaJugador(barajaJugador);
     }

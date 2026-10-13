@@ -44,10 +44,6 @@ public abstract class Jugador {
         this.mazoJugador = mazoJugador;
     }
 
-    public GeneradorDeFichas getGeneradorDeFichas() {
-        return generadorDeFichas;
-    }
-
     public MazoJugador getMazoJugador() {
         return mazoJugador;
     }

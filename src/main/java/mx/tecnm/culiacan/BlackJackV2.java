@@ -69,9 +69,6 @@ public class BlackJackV2 implements VersionJuego {
 
         Croupier croupier = new Croupier(generadorDeFichas, mazoJugador);
 
-        croupier.barajearCartas();
-        croupier.partirCartas();
-
         vistaJuego.mostrarTitulo();
 
         int cantidadJugadores = obtenerCantidadDeJugadores(vistaJuego);
@@ -150,9 +147,7 @@ public class BlackJackV2 implements VersionJuego {
     private List<JugadorApostador> crearJugadores(int cantidadJugadores, MazoJugador mazoJugador) {
         List<JugadorApostador> nuevosJugadores = new ArrayList<>();
 
-        for (int i = 0; i < cantidadJugadores; i++) {
-            nuevosJugadores.add(new JugadorApostador(new GeneradorDeFichas(), mazoJugador));
-        }
+        for (int i = 0; i < cantidadJugadores; i++) nuevosJugadores.add(new JugadorApostador(new GeneradorDeFichas(), mazoJugador));
 
         return nuevosJugadores;
     }
